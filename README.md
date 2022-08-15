@@ -36,6 +36,7 @@ To compile and build the project:
  - Optional: Anypoint Studio.
 
 Deployment in Anypoint Exchange:
+
  - A connected app for maven deployment
 
 <br>
@@ -55,13 +56,13 @@ The sensitive data was removed from the configuration files. The next properties
 
 
 Mac example:
-```
+
+```bash
 export encrypt_key=ThisIsAdemokey23434$
 export salesforce_user=myuser@mycompany.com
 export salesforce_password=MyPassword
 export salesforce_token=sdfjk3432hsdgskgjsg
 
-# clean, compile, test and package the jar file
 mvn clean package \
 -Dencrypt.key=$encrypt_key \
 -Dsalesforce.user=$salesforce_user \
@@ -89,7 +90,8 @@ The next properties must be provided at the command line or the CICD pipeline:
 | build.id       | Build number appended to the name of the jar fiie |
 
 Mac example:
-```
+
+```bash
 export anypoint_environment_clientid=123423434fd40841a6a47bdcadfsdf
 export anypoint_environment_secret=F77CfFEA3a9741A19B211111111111
 export cicd_connectedapp_clientid=0150ba7ce5ef41cdaf0151158789c64a
@@ -127,13 +129,14 @@ The table below shows the additional properties that can be customized in the se
 ## Anypoint Studio development
 
 The next list of properties must be provided in Anypoint Studio in order to run the service:
-* anypoint.environment.clientid
-* anypoint.environment.secret 
-* encrypt.key
-* mule.env - Same as deployment.env, which is described in [Exchange deployment](#exchange-deployment)
-* salesfoce.user
-* salesforce.password
-* salesforce.token  
+
+ - anypoint.environment.clientid
+ - anypoint.environment.secret 
+ - encrypt.key
+ - mule.env - Same as deployment.env, which is described in [Exchange deployment](#exchange-deployment)
+ - salesfoce.user
+ - salesforce.password
+ - salesforce.token  
 
 <br>
 
