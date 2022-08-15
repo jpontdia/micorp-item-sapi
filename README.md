@@ -19,22 +19,24 @@ Mulesoft service for creating order items in Salesforce using data from the Corp
 <br>
 
 The API specification for the service can be reviewed at:
-* [Anypoint Exchange](https://anypoint.mulesoft.com/exchange/078efef1-d139-48ed-92f5-f8d4a0592374/micorp-item-sapi/) (must provide auth credentials)
-* Micorp Developer Portal
+
+ - [Anypoint Exchange](https://anypoint.mulesoft.com/exchange/078efef1-d139-48ed-92f5-f8d4a0592374/micorp-item-sapi/) (must provide auth credentials)
+ - Micorp Developer Portal
 
 <br>
 
 ## Prerequisites
 To compile and build the project:
-* Java Development Kit (JDK) 8. Must be version 8!
-* Apache Maven, version 3.8 or later.
-* A settings.xml with proper configuration to access:
-  * The Anypoint organization maven repository
-  * The Mulesoft EE repositories (to run the test cases)
-* Optional: Anypoint Studio.
+
+ - Java Development Kit (JDK) 8. Must be version 8!
+ - Apache Maven, version 3.8 or later.
+ - A settings.xml with proper configuration to access:
+   - The Anypoint organization maven repository
+   - The Mulesoft EE repositories (to run the test cases)
+ - Optional: Anypoint Studio.
 
 Deployment in Anypoint Exchange:
-* A connected app for maven deployment
+ - A connected app for maven deployment
 
 <br>
 
@@ -53,7 +55,7 @@ The sensitive data was removed from the configuration files. The next properties
 
 
 Mac example:
-```bash
+```
 export encrypt_key=ThisIsAdemokey23434$
 export salesforce_user=myuser@mycompany.com
 export salesforce_password=MyPassword
@@ -87,7 +89,7 @@ The next properties must be provided at the command line or the CICD pipeline:
 | build.id       | Build number appended to the name of the jar fiie |
 
 Mac example:
-```bash
+```
 export anypoint_environment_clientid=123423434fd40841a6a47bdcadfsdf
 export anypoint_environment_secret=F77CfFEA3a9741A19B211111111111
 export cicd_connectedapp_clientid=0150ba7ce5ef41cdaf0151158789c64a
