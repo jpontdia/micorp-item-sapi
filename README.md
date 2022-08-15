@@ -4,12 +4,13 @@
 Personal Mulesoft demo service for the MICORP domain
 
 ## Table of contents
-1. [Description](#description) 
-2. [Prerequisites](#prerequisites)
-3. [Build and packaging](#build-and-packaging)
-4. [Exchange deployment](#exchange-deployment)
-5. [Additional runtime properties](#additional-runtime-properties)
-6. [Anypoint Studio development](#anypoint-studio-development)
+1. [Description](#description)
+2. [Resources](#resources) 
+3. [Prerequisites](#prerequisites)
+4. [Build and packaging](#build-and-packaging)
+5. [Exchange deployment](#exchange-deployment)
+6. [Additional runtime properties](#additional-runtime-properties)
+7. [Anypoint Studio development](#anypoint-studio-development)
 
 ## Description
 Mulesoft service for creating order items in Salesforce using data from the Corporate Orders System. The next diagram shows the architecture of the service:
@@ -18,10 +19,12 @@ Mulesoft service for creating order items in Salesforce using data from the Corp
 
 <br>
 
-The API specification for the service can be reviewed at:
+## Resources
+The resources associated with the service are:
 
- - [Anypoint Exchange](https://anypoint.mulesoft.com/exchange/078efef1-d139-48ed-92f5-f8d4a0592374/micorp-item-sapi/) (must provide auth credentials)
+ - API specification at [Anypoint Exchange](https://anypoint.mulesoft.com/exchange/078efef1-d139-48ed-92f5-f8d4a0592374/micorp-item-sapi/) (must provide auth credentials)
  - Micorp Developer Portal
+ - Source code [Github](https://github.com/jpontdia/mule-micorp-item-sapi)
 
 <br>
 
