@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="post:\items:application\" doc:id="072529fa-ca24-46bb-9390-97285b58c550" >
+		<set-variable value='#[attributes.requestUri ++ "/"]' doc:name="Set Location" doc:id="945f3282-1337-49f0-9902-8faa1e20017a" variableName="location" />
+		<ee:transform doc:name="Salesforce Item record" doc:id="58f2006f-50c8-4fb5-a07a-d6a7f76d21a9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[
+	{
+		"Order__c": payload.orderId,
+		sourceId__c: payload.id,
+		Category__c: payload.category,
+		quantity__c: payload.quantity,
+		size__c: payload.size
+	}
+]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+<!-- [STUDIO:"Logger"]		<logger level="INFO" doc:name="Logger" doc:id="a3caf679-bc83-46a8-a7b6-e9a2ed426bc3" message="#[payload]"/> [STUDIO] -->
+		<salesforce:create type="Item__c" doc:name="Create Item" doc:id="4cd13804-6934-4836-a1f3-0d6afbf89b23" config-ref="Salesforce_Config" />
+		<validation:is-true doc:id="c8d4fedb-ac40-433e-8536-86110b88e136" expression="#[payload.successful == true]" doc:name="create success?" />
+		<ee:transform doc:name="Set Header" doc:id="8e03830f-8f90-4d36-b8a7-990691d06cef" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="outboundHeaders" ><![CDATA[%dw 2.0
+output application/java
+---
+{"Location": 
+	( (vars.location as String)
+		++ (payload.items[0].id as String)
+	)
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Response Message" doc:id="90081508-adee-4422-ac00-7a60562d6ac7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Item created successfully"
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="error-handling" />
+	</flow>
+</mule>
