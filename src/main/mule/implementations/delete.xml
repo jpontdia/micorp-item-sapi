@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
-http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
 	<flow name="deleteFlow" doc:id="7eaec4ec-9f52-4a54-bc95-bef41836cdf1" >
-		<ee:transform doc:name="get customerId" doc:id="503d81c8-6327-4f57-8f31-4d36389bf3e3" >
+		<json-logger:log-start doc:name="Log start" doc:id="66a617b5-0575-42df-8e06-f3d290b81d33" config-ref="JSON_Logger_Config" message="#[&quot;Delete Item itemId=&quot; ++ attributes.uriParams.'itemId']">
+			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule
+import * from dw::util::Values
+output application/json
+---
+{
+    openTelemetry: JSONLoggerModule::stringifyNonJSON(vars.OTEL_TRACE_CONTEXT default "") 
+}]]]></json-logger:content>
+		</json-logger:log-start>
+		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]" doc:name="otel Tags" doc:id="7520dd46-2640-4920-adcf-c8844ce646d2" variableName="openTelemetryTags" />
+		<ee:transform doc:name="get itemId" doc:id="503d81c8-6327-4f57-8f31-4d36389bf3e3" >
 			<ee:variables >
 				<ee:set-variable variableName="itemId" ><![CDATA[%dw 2.0
 output application/json

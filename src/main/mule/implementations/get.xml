@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
 	<flow name="queryItem" doc:id="58aac33e-1f0a-4c54-a354-97ee97c8ce49">
 		<ee:transform doc:name="Where Filter" doc:id="7b510d03-1d60-4cef-b4ad-ddf1aee94f57">
 			<ee:message>
@@ -51,12 +52,42 @@ payload map (item, value) ->
 		</ee:transform>
 		<error-handler ref="error-handling" />
 	</flow>
+	
+	
+	
 	<flow name="get:\items" doc:id="61a03cc9-0c40-4f14-a3e1-1f11d3d7038e" >
+		<json-logger:log-start doc:name="Log start" doc:id="52fd71d7-a62d-49f5-ab1c-55cbd537e872" config-ref="JSON_Logger_Config" message='#["Items for orderId=" ++ attributes.queryParams.orderId]'>
+			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule
+import * from dw::util::Values
+output application/json
+---
+{
+    openTelemetry: JSONLoggerModule::stringifyNonJSON(vars.OTEL_TRACE_CONTEXT default "") 
+}]]]></json-logger:content>
+		</json-logger:log-start>
+		<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": attributes.queryParams.orderId default ""&#10;}]' doc:name="otel Tags" doc:id="7dd612c1-759b-472e-ab16-11ad102c557c" variableName="openTelemetryTags" />
 		<set-variable value="#[attributes.queryParams.orderId]" doc:name="orderId" doc:id="e831eb2c-0764-4276-9710-6b27ad8aaa47" variableName="orderId" />
 		<flow-ref doc:name="queryItem" doc:id="53479bda-c618-42fb-8d95-6c5503545983" name="queryItem"/>
 		<error-handler ref="error-handling" />
 	</flow>
+	
+	
 	<flow name="get:\items\(itemId)" doc:id="203b1796-134d-46ec-b93f-5b6d0804d747" >
+	
+		<json-logger:log-start doc:name="Log start" doc:id="08b7dbd5-3376-40a1-9b71-6369f464df9a" config-ref="JSON_Logger_Config" message="#[&quot;Item getById itemId=&quot; ++ attributes.uriParams.'itemId']">
+			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule
+import * from dw::util::Values
+output application/json
+---
+{
+    openTelemetry: JSONLoggerModule::stringifyNonJSON(vars.OTEL_TRACE_CONTEXT default "") 
+} ++
+{
+    payload: JSONLoggerModule::stringifyNonJSON(payload)
+		mask field("lastName") with "*****"    
+}]]]></json-logger:content>
+		</json-logger:log-start>
+		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]" doc:name="otel Tags" doc:id="2979d5a3-ebc0-4c4e-8bc3-2e50ea275760" variableName="openTelemetryTags" />
 		<set-variable value="#[attributes.uriParams.'itemId']" doc:name="itemId" doc:id="c1f4ba14-7cbf-4773-9c20-d7442a423ac0" variableName="itemId" />
 		<flow-ref doc:name="queryItem" doc:id="73eeb6e2-c644-444b-bbf6-196ac9be2eff" name="queryItem" />
 		<ee:transform doc:name="getItem" doc:id="42d0ba04-005f-4500-af7f-2b4dd943a8bf" >
