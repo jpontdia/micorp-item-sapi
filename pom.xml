@@ -11,7 +11,7 @@
 	
 	<groupId>078efef1-d139-48ed-92f5-f8d4a0592374</groupId>
 	<artifactId>micorp-item-sapi</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 	<packaging>mule-application</packaging>
 	<name>mule-micorp-item-sapi</name>
 
@@ -20,15 +20,15 @@
 		<api.layer>system</api.layer>
 		<api.tags>micorp, salesforce, item, sapi</api.tags>
 		
-		<!-- API spec connector: micorp-item-sapi -->
+		<!-- RAML specification -->
 		<restconnector.api.spec.group>${project.groupId}</restconnector.api.spec.group>
 		<restconnector.api.spec.artifact>micorp-item-sapi</restconnector.api.spec.artifact>
 		<restconnector.api.spec.version>1.0.2</restconnector.api.spec.version>
 	</properties>
 
 	<dependencies>
-		<!-- Service Dependencies  -->
-		<!-- RAML: micorp-item-sapi -->
+		
+		<!-- RAML specification -->
 		<dependency>
 			<groupId>${restconnector.api.spec.group}</groupId>
 			<artifactId>${restconnector.api.spec.artifact}</artifactId>
@@ -46,9 +46,9 @@
 		
 		<!-- OpenTelemetry connector -->
 		<dependency>
-			<groupId>078efef1-d139-48ed-92f5-f8d4a0592374</groupId>
-			<artifactId>opentelemetry-connector</artifactId>
-			<version>1.0.20</version>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>mule-otel-connector</artifactId>
+			<version>1.0.50</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		
