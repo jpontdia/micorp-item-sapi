@@ -6,6 +6,8 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	
+	
 	<flow name="queryItem" doc:id="58aac33e-1f0a-4c54-a354-97ee97c8ce49">
 		<ee:transform doc:name="Where Filter" doc:id="7b510d03-1d60-4cef-b4ad-ddf1aee94f57">
 			<ee:message>
@@ -23,7 +25,9 @@ output application/json
 sqlFilter2	]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<salesforce:query doc:name="Item" doc:id="e8198f0b-8640-4783-b914-a7a0e8876449" config-ref="Salesforce_Config">
+		<salesforce:query
+			doc:name="Item" 
+			config-ref="MicorpSalesforceConfig">
 			<salesforce:salesforce-query><![CDATA[SELECT id, name, Order__c, quantity__c, size__c, sourceId__c, category__c
 FROM Item__c 
  :soqlFilter]]></salesforce:salesforce-query>
@@ -50,43 +54,35 @@ payload map (item, value) ->
 }    ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<error-handler ref="error-handling" />
+		<error-handler ref="global-error-handler" />
 	</flow>
 	
 	
 	
 	<flow name="get:\items" doc:id="61a03cc9-0c40-4f14-a3e1-1f11d3d7038e" >
-		<json-logger:log-start doc:name="Log start" doc:id="52fd71d7-a62d-49f5-ab1c-55cbd537e872" config-ref="JSON_Logger_Config" message='#["Items for orderId=" ++ attributes.queryParams.orderId]'>
-			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule
-import * from dw::util::Values
-output application/json
----
-{
-    openTelemetry: JSONLoggerModule::stringifyNonJSON(vars.OTEL_TRACE_CONTEXT default "") 
-}]]]></json-logger:content>
-		</json-logger:log-start>
+	
+		<logger 
+			level="INFO" 
+			doc:name="start" 
+			message='#["Items for orderId=" ++ attributes.queryParams.orderId]'/>
+		
 		<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": attributes.queryParams.orderId default ""&#10;}]' doc:name="otel Tags" doc:id="7dd612c1-759b-472e-ab16-11ad102c557c" variableName="openTelemetryTags" />
+		
 		<set-variable value="#[attributes.queryParams.orderId]" doc:name="orderId" doc:id="e831eb2c-0764-4276-9710-6b27ad8aaa47" variableName="orderId" />
+		
 		<flow-ref doc:name="queryItem" doc:id="53479bda-c618-42fb-8d95-6c5503545983" name="queryItem"/>
-		<error-handler ref="error-handling" />
+		
+		<error-handler ref="global-error-handler" />
 	</flow>
 	
 	
 	<flow name="get:\items\(itemId)" doc:id="203b1796-134d-46ec-b93f-5b6d0804d747" >
 	
-		<json-logger:log-start doc:name="Log start" doc:id="08b7dbd5-3376-40a1-9b71-6369f464df9a" config-ref="JSON_Logger_Config" message="#[&quot;Item getById itemId=&quot; ++ attributes.uriParams.'itemId']">
-			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule
-import * from dw::util::Values
-output application/json
----
-{
-    openTelemetry: JSONLoggerModule::stringifyNonJSON(vars.OTEL_TRACE_CONTEXT default "") 
-} ++
-{
-    payload: JSONLoggerModule::stringifyNonJSON(payload)
-		mask field("lastName") with "*****"    
-}]]]></json-logger:content>
-		</json-logger:log-start>
+		<logger 
+			level="INFO" 
+			doc:name="start" 
+			message="#[&quot;Item getById itemId=&quot; ++ attributes.uriParams.'itemId']"/>
+				
 		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]" doc:name="otel Tags" doc:id="2979d5a3-ebc0-4c4e-8bc3-2e50ea275760" variableName="openTelemetryTags" />
 		<set-variable value="#[attributes.uriParams.'itemId']" doc:name="itemId" doc:id="c1f4ba14-7cbf-4773-9c20-d7442a423ac0" variableName="itemId" />
 		<flow-ref doc:name="queryItem" doc:id="73eeb6e2-c644-444b-bbf6-196ac9be2eff" name="queryItem" />
@@ -98,6 +94,6 @@ output application/json
 if (payload[0] == null) "" else payload[0]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<error-handler ref="error-handling" />
+		<error-handler ref="global-error-handler" />
 	</flow>
 </mule>

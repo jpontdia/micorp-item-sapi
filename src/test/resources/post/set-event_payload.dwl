@@ -1,5 +1,7 @@
 {
-  "firstName": "Juan",
-  "lastName": "Lopez",
-  "address": "1234 Main St San Jose 12345"
+  "id": "12345",
+  "category": "T-Shirt",
+  "quantity": 4,
+  "size": "M",
+  "orderId": "a038b00000PddWXAAZ"
 }

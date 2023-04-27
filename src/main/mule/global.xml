@@ -29,22 +29,17 @@
 		http://www.mulesoft.org/schema/mule/open-telemetry 
 		http://www.mulesoft.org/schema/mule/open-telemetry/current/mule-open-telemetry.xsd">
 
-	<salesforce:sfdc-config
-		name="Salesforce_Config" 
-		doc:name="Salesforce Config">
-		<salesforce:basic-connection
-			username="${salesforce.user}"
-			password="${salesforce.password}"
-			securityToken="${salesforce.token}" />
-	</salesforce:sfdc-config>
 
-
+	<configuration-properties
+		doc:name="Configuration properties"
+		doc:id="ecf35193-8281-475d-a7e0-4decce6c7bf2"
+		file="config.yaml"   />
+	
 	<http:listener-config name="api-httpListenerConfig">
 		<http:listener-connection
 			host="0.0.0.0"
 			port="${http.port}" />
 	</http:listener-config>
-
 
 	<apikit:config
 		name="api-config"
@@ -52,31 +47,20 @@
 		outboundHeadersMapName="outboundHeaders"
 		httpStatusVarName="httpStatus" />
 
-
-	<configuration-properties
-		doc:name="Configuration properties"
-		doc:id="48120163-cba7-4a6c-8237-33e12687b061"
-		file="config.yaml"   />
-
 	<api-gateway:autodiscovery
 		apiId="${api.id}"
 		ignoreBasePath="true"
 		doc:name="API Autodiscovery"
 		doc:id="f31a60b8-42c5-4124-af17-10589d24c2fe"
 		flowRef="api-main" />
+    	
+	<import 
+		doc:name="Import" 
+		doc:id="2409fc1d-da6d-49ae-849f-0617e383927c" 
+		file="micorp-configuration.xml" />
 		
-	<json-logger:config
-		name="JSON_Logger_Config"
-		doc:name="JSON Logger Config"
-		doc:id="3f0b882c-f676-478f-9479-3992d4a9ea97"
-		environment="${env}"
-		applicationName="${project.artifact}"
-		applicationVersion="${project.version}" />	
-		
-	<open-telemetry:config 
-		name="Open_Telemetry_Connector_Config" 
-		doc:name="Open Telemetry Connector Config" 
-		serviceName="micorp-item-sapi"
-		additionalTags="env=${env}"
-    	collectorEndpoint="${otel.collectorendpoint}"/>
+	<import 
+		doc:name="Import" 
+		doc:id="9467eef0-c95b-4a08-8a53-1f8616d33d7e" 
+		file="global-error.xml" />	
 </mule>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule 
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation" 
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd 
+		http://www.mulesoft.org/schema/mule/core 
+		http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit 
+		http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  
+		http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/http 
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+		http://www.mulesoft.org/schema/mule/validation 
+		http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+		http://www.mulesoft.org/schema/mule/ee/core 
+		http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+		
+	<munit:config name="new-test-suite.xml" minMuleVersion="4.4.0" />
+	
+	
+	<http:request-config name="HTTP_Request_configuration" 
+		doc:name="HTTP Request configuration" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	
+	<validation:config 
+		name="Validation_Config" doc:name="Validation Config" doc:id="7116348a-8559-4cd9-af7d-c8088ab79e76" />
+	
+	<munit:test name="test-create" doc:id="fa2ae6b8-1343-4433-8a3c-6bc8415bc5e1" >
+	
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="api-main" />
+			<munit:enable-flow-source value="post:\items:application\json:api-config" />
+			<munit:enable-flow-source value="get:\items\(itemId):api-config" />
+			<munit:enable-flow-source value="get:\items:api-config" />
+			<munit:enable-flow-source value="get:\items\(itemId)" />
+			<munit:enable-flow-source value="get:\items" />
+			<munit:enable-flow-source value="queryItem" />
+			<munit:enable-flow-source value="deleteFlow" />
+			<munit:enable-flow-source value="delete:\items\(itemId):api-config" />
+			<munit:enable-flow-source value="post:\items:application\" />
+		</munit:enable-flow-sources>
+	
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="0cf54274-a8f1-4853-a658-94ff18a98cfb" >
+				<munit:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;readUrl("classpath://post/set-event_payload.dwl")]' />
+			</munit:set-event>
+			<logger level="INFO" doc:name="Logger" doc:id="d71977ab-5a0f-46a7-9e68-fd5fb89caa8c" message="#[vars.sourcePayload]" />
+			<set-variable value="#[payload]" doc:name="save payload" doc:id="311b5435-6f59-4c2e-be4a-d656a1564bbb" variableName="sourcePayload" />
+		</munit:behavior>
+	
+		<munit:execution >
+			<logger level="INFO" doc:name="Logger" doc:id="95b32944-1d9d-41e3-bd85-5ea1c4c0dd57" message="Test create"/>
+			<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;payload.orderId]" doc:name="set orderId" doc:id="ae56c5cb-d1ad-4dd7-9fb6-e20a7b7627dd" variableName="orderId"/>
+			<http:request method="POST" doc:name="Request" doc:id="607be460-955f-463d-8a72-983c0fe9c48e" path="/api/items" config-ref="HTTP_Request_configuration">
+				<http:body ><![CDATA[#[output application/json
+---
+payload]]]></http:body>
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			</http:request>
+			<validation:is-true doc:name="status Created?" doc:id="519114a9-2ee5-48a2-b586-2060076beaed" config-ref="Validation_Config" expression="#[attributes.statusCode == 201]" />
+			<ee:transform doc:name="get customerId" doc:id="9b8b919c-0a26-45f5-b293-ac89b5910ee1" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="itemId" ><![CDATA[%dw 2.0
+import dw::core::Strings
+var location = attributes.headers.location
+---
+if (location != null ) 
+    (location Strings::substringAfterLast "/")
+else null
+]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			
+			<logger 
+				level="INFO" 
+				doc:name="new itemId" 
+				doc:id="8fbf040e-c5d4-4d3c-86ff-887d61e4e37f" 
+				message='#["New itemId: " ++ vars.itemId]' />
+			<flow-ref doc:name="get Item" doc:id="77d277e0-7418-42bf-a651-8180625c12ae" name="test-get"/>
+			<flow-ref doc:name="get Items" doc:id="f004432b-0663-48b5-b241-99e24c3bc863" name="test-getItems"/>
+			<flow-ref doc:name="Flow Reference" doc:id="93d9635d-4289-4f0e-aa10-c26eb09276bb" name="test-delete-item"/>
+		</munit:execution>
+	</munit:test>
+	<sub-flow name="test-get" doc:id="bf9aae9d-a2e0-4647-bab9-7b74ac0fc43a" >
+		<logger level="INFO" doc:name="Logger" doc:id="6dc136f7-77c6-4b32-b296-1bf5d0198be0" message="get Item" />
+		<http:request method="GET" doc:name="Request" doc:id="fcc14b24-1a31-4ed6-89be-e80dadbd6c2e" config-ref="HTTP_Request_configuration" path="/api/items/{itemId}" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"itemId" : vars.itemId
+}]]]></http:uri-params>
+		</http:request>
+		<validation:is-true doc:name="get success" doc:id="65ec1a4d-d619-44c1-8785-a94adc0f9fcc" expression="#[attributes.statusCode == 200]"/>
+		<validation:is-true doc:name="payload exist" doc:id="8904865c-8afa-4b4b-afd5-aaa1e76ec6d0" expression="#[payload != null]"/>
+	</sub-flow>
+	<sub-flow name="test-getItems" doc:id="13d868d2-2a73-4ec1-b148-1e721b0ea281" >
+		<logger level="INFO" doc:name="get Items of order" doc:id="0d84fa62-1fb6-428b-9bb2-a3b9db492f6d" message="get Item" />
+		<http:request method="GET" doc:name="Request" doc:id="74baab91-bd9c-43eb-b5e9-c1558f5585fc" config-ref="HTTP_Request_configuration" path="/api/items?orderId={orderId}">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"orderId" : vars.orderId
+}]]]></http:uri-params>
+		</http:request>
+		<validation:is-true doc:name="payload exist" doc:id="c9e90d2a-1b3f-4450-915e-b1b2de9db8d0" expression="#[payload != null]" />
+		<validation:is-true doc:name="get success" doc:id="ad64a7b4-1e34-4726-8e5f-8e836ed33656" expression="#[attributes.statusCode == 200]" />
+	</sub-flow>
+	<sub-flow name="test-delete-item" doc:id="c790d546-a0dc-4d65-86e5-527bf31b6029" >
+		<logger level="INFO" doc:name="Logger" doc:id="c0c5a336-fea2-4023-a2b2-53b247640f2a" message="Delete Item" />
+		<http:request method="DELETE" doc:name="delete item" doc:id="b65ac152-800d-44ce-9a5c-e1c33b3e3da4" config-ref="HTTP_Request_configuration" path="/api/items/{itemId}" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"itemId" : vars.itemId
+}]]]></http:uri-params>
+		</http:request>
+		<validation:is-true doc:name="get success" doc:id="a1cbf6c4-b887-4f9f-bc4e-b72d3e36ebfc" expression="#[attributes.statusCode == 200]" />
+		<logger level="INFO" doc:name="delete same item" doc:id="377d9af9-eed7-48aa-b8dd-b8583688b018" message="Delete again the same item and expect a 400 status" />
+		<try doc:name="Try" doc:id="040ad653-1aa6-4a17-84d2-6b5c870693b9" >
+			<http:request method="DELETE" doc:name="delete same item" doc:id="966d895f-bc67-4ad9-8d26-9904a972e4db" config-ref="HTTP_Request_configuration" path="/api/items/{itemId}">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"itemId" : vars.itemId
+}]]]></http:uri-params>
+		</http:request>
+			<error-handler doc:id="dc6c5fde-2ce8-41ce-ab4d-58f284230581" >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f1668517-72cc-4f59-9ad2-c56e26942de4" >
+					<logger level="INFO" doc:name="error on delete" doc:id="b9752607-aa28-4703-9b3c-6b5408eadd81" message="The delete on the same item was correctly called"/>
+					<logger level="INFO" doc:name="Logger" doc:id="52b13869-09f3-473b-b317-c996d1349ad9" message="#[payload]" />
+					<logger level="INFO" doc:name="Logger1" doc:id="66ff91ca-02eb-415b-bd18-2d6a80927fde" message="#[attributes.statusCode]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</sub-flow>
+
+</mule>

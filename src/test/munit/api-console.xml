@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+
+	<http:request-config
+		name="http_test_local_configuration"
+		doc:name="HTTP Request configuration"
+		doc:id="bd1a231f-511d-481b-8b36-3c8369118810">
+		<http:request-connection
+			host="localhost"
+			port="8081" />
+	</http:request-config>
+
+
+	<munit:config
+		name="error-scenarios.xml"
+		minMuleVersion="4.3.0" />
+
+
+	<munit:test
+		name="test-console"
+		doc:id="a5e95897-cf92-4a76-aef7-779a626f5b0e">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="api-console" />
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<logger
+                level="INFO" 
+                doc:name="start" 
+                doc:id="30e6fcc0-85be-4c40-a8d4-55dec7d2c0b8" 
+                message="Test console" />
+                
+			<http:request
+				method="GET"
+				doc:name="Console"
+				doc:id="6465c4a7-4edd-49a5-baed-05ddfc0db02a"
+				path="/console"
+				config-ref="http_test_local_configuration">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "text/html"
+}]]]></http:headers>
+			</http:request>
+			<ee:transform
+				doc:name="Transform Message"
+				doc:id="52315af4-74df-4118-a7ef-00110cf82a59">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output text
+---
+payload as String]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger
+                level="INFO" 
+                doc:name="result" 
+                doc:id="6dfc2c99-1a48-49cb-954c-e128b8ba102d" 
+                message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;   message: "Result",&#10; payload: payload&#10;}]' />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that
+				doc:name="Assert that"
+				doc:id="9bd83290-e65a-44fb-9c54-fbc12abbd348"
+				is="#[MunitTools::notNullValue()]"
+				expression='#[payload contains "APIkit Console"]'
+				message="The APIKit is not correctly configured" />
+		</munit:validation>
+	</munit:test>
+
+</mule>

@@ -22,7 +22,7 @@
 			</http:error-response>
 		</http:listener>
 		<apikit:router config-ref="api-config" />
-		<error-handler ref="error-handling" />
+		<error-handler ref="global-error-handler" />
 	</flow>
 	
 	
@@ -39,7 +39,7 @@
 			</http:error-response>
 		</http:listener>
 		<apikit:console config-ref="api-config" />
-		<error-handler ref="error-handling" />
+		<error-handler ref="global-error-handler" />
 	</flow>
 	
 	
