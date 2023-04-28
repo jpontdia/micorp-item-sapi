@@ -32,6 +32,9 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 		minMuleVersion="4.3.0" />
 
 
+	<flow name="api-consoleFlow" doc:id="2704b344-9d93-482f-93f4-95acce93bc49" >
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="421ef6c8-2511-4c37-83d5-8cf0cd7a5bb0" />
+	</flow>
 	<munit:test
 		name="test-console"
 		doc:id="a5e95897-cf92-4a76-aef7-779a626f5b0e">

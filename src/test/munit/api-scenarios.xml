@@ -40,7 +40,7 @@ http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/mu
 		<munit:enable-flow-sources >
 			<munit:enable-flow-source value="api-main" />
 			<munit:enable-flow-source value="post:\items:application\json:api-config" />
-			<munit:enable-flow-source value="get:\items\(itemId):api-config" />
+			<!--  <munit:enable-flow-source value="get:\items\(itemId):api-config" /> --> 
 			<munit:enable-flow-source value="get:\items:api-config" />
 			<munit:enable-flow-source value="get:\items\(itemId)" />
 			<munit:enable-flow-source value="get:\items" />
