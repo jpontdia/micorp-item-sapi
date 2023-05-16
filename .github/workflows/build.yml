@@ -6,9 +6,14 @@ on:
   pull_request:
 
 jobs:
-  build-and-deploy:
-    uses: jpontdia/mule-build-and-deploy/.github/workflows/build-deploy-exchange.yml@main
-    with:
-      keyvault-key: jpworks-keyvault
-    secrets:
-      azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+  dev-testing:
+    name: Development testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the source code
+        uses: actions/checkout@v3
+
+      - name: Install API Functional Monitoring
+        run: |
+          curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
+          echo "bat -version: $(bat -version)"
