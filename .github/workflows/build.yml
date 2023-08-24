@@ -1,19 +1,15 @@
-name: Build and deploy to Anypoint Exchange
+name: Build and deploy
  
 on:
   push:
     branches: [ "main" ]
-  pull_request:
+  pull_request: 
 
 jobs:
-  dev-testing:
-    name: Development testing
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get the source code
-        uses: actions/checkout@v3
-
-      - name: Install API Functional Monitoring
-        run: |
-          curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
-          echo "bat -version: $(bat -version)"
+  Mulesoft:
+    uses: jpontdia/common-devops/.github/workflows/mulesoft.yml@main
+    with:
+      keyvault-key: jpworks-keyvault
+    secrets:
+      azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+      gist-accesstoken: ${{ secrets.GIST_ACCESSTOKEN }}
