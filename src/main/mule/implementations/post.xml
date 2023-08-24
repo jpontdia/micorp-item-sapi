@@ -24,8 +24,8 @@
 			message="#[&quot;Create item for orderId=&quot; ++ payload.orderId]"/>
 		
 		<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": payload.orderId default "",&#10;    "category": payload.category default "",&#10;    "itemId": payload.id default ""&#10;}]' doc:name="otel Tags" doc:id="68064cb3-35bc-4da6-9362-fa08fd1eba0d" variableName="openTelemetryTags" />
-		<set-variable value='#[attributes.requestUri ++ "/"]' doc:name="Set Location" doc:id="945f3282-1337-49f0-9902-8faa1e20017a" variableName="location" />
-		<ee:transform doc:name="Salesforce Item record" doc:id="58f2006f-50c8-4fb5-a07a-d6a7f76d21a9" >
+		<set-variable value='#[attributes.requestUri ++ "/"]' doc:name="Set Location" variableName="location" />
+		<ee:transform doc:name="Salesforce Item record" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -44,9 +44,9 @@ output application/json
 		<salesforce:create 
 			type="Item__c" 
 			doc:name="Create Item" 
-			config-ref="MicorpSalesforceConfig" />
+			config-ref="GlobalSalesforceConfig" />
 		<validation:is-true doc:id="c8d4fedb-ac40-433e-8536-86110b88e136" expression="#[payload.successful == true]" doc:name="create success?" />
-		<ee:transform doc:name="Set Header" doc:id="8e03830f-8f90-4d36-b8a7-990691d06cef" >
+		<ee:transform doc:name="Set Header" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
@@ -65,7 +65,7 @@ output application/java
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<ee:transform doc:name="Response Message" doc:id="90081508-adee-4422-ac00-7a60562d6ac7" >
+		<ee:transform doc:name="Response Message">
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json

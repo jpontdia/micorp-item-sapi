@@ -56,11 +56,11 @@
     	
 	<import 
 		doc:name="Import" 
-		doc:id="2409fc1d-da6d-49ae-849f-0617e383927c" 
-		file="micorp-configuration.xml" />
+		doc:id="fddb977b-d2f2-419c-bba8-4bcb2f37ccbf" 
+		file="global-configuration.xml" />
 		
 	<import 
 		doc:name="Import" 
-		doc:id="9467eef0-c95b-4a08-8a53-1f8616d33d7e" 
-		file="global-error.xml" />	
+		doc:id="2e0de2c9-ad7c-4349-aa72-e24fd4ca7e5e" 
+		file="global-error.xml" />
 </mule>

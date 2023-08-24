@@ -27,7 +27,7 @@
 			
 		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]" doc:name="otel Tags" doc:id="7520dd46-2640-4920-adcf-c8844ce646d2" variableName="openTelemetryTags" />
 
-		<ee:transform doc:name="get itemId" doc:id="503d81c8-6327-4f57-8f31-4d36389bf3e3" >
+		<ee:transform doc:name="get itemId">
 			<ee:variables >
 				<ee:set-variable variableName="itemId" ><![CDATA[%dw 2.0
 output application/json
@@ -38,13 +38,15 @@ attributes.uriParams.'itemId']]></ee:set-variable>
 
 		<salesforce:delete 
 			doc:name="Delete"
-			config-ref="MicorpSalesforceConfig" >
+			config-ref="GlobalSalesforceConfig" >
+
 			<salesforce:ids ><![CDATA[#[[vars.itemId]]]]></salesforce:ids>
+		
 		</salesforce:delete>
 
-		<choice doc:name="Choice" doc:id="a08cf84c-6504-48a8-ac64-839ce3fdb793" >
+		<choice doc:name="Choice" >
 			<when expression="#[payload.successful]" >
-				<ee:transform doc:name="delete success" doc:id="a5079758-0a68-4fbc-aa18-fdbd88a584b7">
+				<ee:transform doc:name="delete success" >
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -57,8 +59,8 @@ output application/json
 		</ee:transform>
 			</when>
 			<otherwise >
-				<logger level="INFO" doc:name="Logger" doc:id="4dec6e0e-2fa3-451a-a654-3b5dc05bddb3" message='#["Error on deleting itemId=" ++ vars.itemId]'/>
-				<ee:transform doc:name="Response" doc:id="7b4848b3-8b8b-43ad-8af7-980985117a89" >
+				<logger level="INFO" doc:name="Logger" message='#["Error on deleting itemId=" ++ vars.itemId]'/>
+				<ee:transform doc:name="Response" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json

@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" 
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
 	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
-http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core 
+		http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/ee/core 
+		http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/salesforce 
+		http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+		http://www.mulesoft.org/schema/mule/json-logger
+		http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
 	
-	
-	<flow name="queryItem" doc:id="58aac33e-1f0a-4c54-a354-97ee97c8ce49">
-		<ee:transform doc:name="Where Filter" doc:id="7b510d03-1d60-4cef-b4ad-ddf1aee94f57">
+	<flow name="queryItem">
+
+		<ee:transform doc:name="Where Filter" >
 			<ee:message>
 			</ee:message>
 			<ee:variables>
@@ -27,7 +36,7 @@ sqlFilter2	]]></ee:set-variable>
 		</ee:transform>
 		<salesforce:query
 			doc:name="Item" 
-			config-ref="MicorpSalesforceConfig">
+			config-ref="GlobalSalesforceConfig">
 			<salesforce:salesforce-query><![CDATA[SELECT id, name, Order__c, quantity__c, size__c, sourceId__c, category__c
 FROM Item__c 
  :soqlFilter]]></salesforce:salesforce-query>
@@ -37,7 +46,7 @@ FROM Item__c
 	soqlFilter : vars.soqlFilter
 }]]]></salesforce:parameters>
 		</salesforce:query>
-		<ee:transform doc:name="Item Response" doc:id="e725995b-6da6-40a6-a3d5-dee6535a20c2">
+		<ee:transform doc:name="Item Response">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output json
@@ -59,7 +68,7 @@ payload map (item, value) ->
 	
 	
 	
-	<flow name="get:\items" doc:id="61a03cc9-0c40-4f14-a3e1-1f11d3d7038e" >
+	<flow name="get:\items" >
 	
 		<logger 
 			level="INFO" 
@@ -68,9 +77,14 @@ payload map (item, value) ->
 		
 		<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": attributes.queryParams.orderId default ""&#10;}]' doc:name="otel Tags" doc:id="7dd612c1-759b-472e-ab16-11ad102c557c" variableName="openTelemetryTags" />
 		
-		<set-variable value="#[attributes.queryParams.orderId]" doc:name="orderId" doc:id="e831eb2c-0764-4276-9710-6b27ad8aaa47" variableName="orderId" />
+		<set-variable 
+			value="#[attributes.queryParams.orderId]" 
+			doc:name="orderId" 
+			variableName="orderId" />
 		
-		<flow-ref doc:name="queryItem" doc:id="53479bda-c618-42fb-8d95-6c5503545983" name="queryItem"/>
+		<flow-ref 
+			doc:name="queryItem"
+			name="queryItem"/>
 		
 		<error-handler ref="global-error-handler" />
 	</flow>
@@ -84,9 +98,12 @@ payload map (item, value) ->
 			message="#[&quot;Item getById itemId=&quot; ++ attributes.uriParams.'itemId']"/>
 				
 		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]" doc:name="otel Tags" doc:id="2979d5a3-ebc0-4c4e-8bc3-2e50ea275760" variableName="openTelemetryTags" />
-		<set-variable value="#[attributes.uriParams.'itemId']" doc:name="itemId" doc:id="c1f4ba14-7cbf-4773-9c20-d7442a423ac0" variableName="itemId" />
-		<flow-ref doc:name="queryItem" doc:id="73eeb6e2-c644-444b-bbf6-196ac9be2eff" name="queryItem" />
-		<ee:transform doc:name="getItem" doc:id="42d0ba04-005f-4500-af7f-2b4dd943a8bf" >
+		
+		<set-variable value="#[attributes.uriParams.'itemId']" doc:name="itemId" variableName="itemId" />
+		
+		<flow-ref doc:name="queryItem"  name="queryItem" />
+		
+		<ee:transform doc:name="getItem" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -94,6 +111,7 @@ output application/json
 if (payload[0] == null) "" else payload[0]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		
 		<error-handler ref="global-error-handler" />
 	</flow>
 </mule>
