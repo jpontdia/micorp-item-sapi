@@ -72,11 +72,6 @@
 			<groupId>io.logz.sender</groupId>
 			<artifactId>logzio-sender</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.mulesoft.connectors</groupId>
-			<artifactId>mule-salesforce-connector</artifactId>
-			<classifier>mule-plugin</classifier>
-		</dependency>
 	</dependencies>
 
 	<!--Repository to get the artifacts for your Anypoint organization -->
