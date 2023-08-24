@@ -14,7 +14,7 @@ Mulesoft service for creating order items in Salesforce using data from the Corp
 1. [Configuration](#configuration)
 
 ## Description
-Mulesoft service for creating order items in Salesforce using data from the Corporate Orders System. The next diagram shows the architecture of the service:
+Mulesoft service for creating order items in Salesforce using data from the Corporate Orders System. The next diagram shows the architecture of the service: 
 
 ![architecture](https://github.com/jpontdia/micorp-item-sapi/raw/main/docs/architecture.png)
 
