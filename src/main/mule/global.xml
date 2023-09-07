@@ -8,7 +8,6 @@
 	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
 	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="
@@ -24,15 +23,12 @@
 		http://www.mulesoft.org/schema/mule/core/current/mule.xsd 
 		http://www.mulesoft.org/schema/mule/salesforce 
 		http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd 
-		http://www.mulesoft.org/schema/mule/json-logger 
-		http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
 		http://www.mulesoft.org/schema/mule/open-telemetry 
 		http://www.mulesoft.org/schema/mule/open-telemetry/current/mule-open-telemetry.xsd">
 
 
 	<configuration-properties
 		doc:name="Configuration properties"
-		doc:id="ecf35193-8281-475d-a7e0-4decce6c7bf2"
 		file="config.yaml"   />
 	
 	<http:listener-config name="api-httpListenerConfig">
@@ -51,16 +47,17 @@
 		apiId="${api.id}"
 		ignoreBasePath="true"
 		doc:name="API Autodiscovery"
-		doc:id="f31a60b8-42c5-4124-af17-10589d24c2fe"
 		flowRef="api-main" />
-    	
+	
 	<import 
 		doc:name="Import" 
-		doc:id="fddb977b-d2f2-419c-bba8-4bcb2f37ccbf" 
 		file="global-configuration.xml" />
+
+	<import 
+		doc:name="Import" 
+		file="global-configuration-salesforce.xml" />
 		
 	<import 
 		doc:name="Import" 
-		doc:id="2e0de2c9-ad7c-4349-aa72-e24fd4ca7e5e" 
 		file="global-error.xml" />
 </mule>
