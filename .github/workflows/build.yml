@@ -3,11 +3,9 @@ name: Build and deploy
 on:
   push:
     branches: [ "main" ]
-  pull_request: 
 
 jobs:
   Mulesoft:
-    #uses: jpontdia/common-devops/.github/workflows/mulesoft-tag.yml@main
     uses: jpontdia/common-devops/.github/workflows/mulesoft.yml@main
     with:
       keyvault-key: jpworks-keyvault
