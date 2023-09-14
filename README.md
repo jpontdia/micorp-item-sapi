@@ -1,8 +1,14 @@
 # Salesforce Item SAPI
-![Powered by](https://img.shields.io/badge/Powered%20by-Mulesoft-blue.svg)
+![Powered by](https://img.shields.io/badge/Powered%20by-Mulesoft-535597.svg)
   ![Unit test](https://gist.githubusercontent.com/jpontdia/2f22ca2ddf1ba473d6e2cff61cc2fba9/raw/micorp-item-sapi-ut.svg)
   ![Code coverage](https://gist.githubusercontent.com/jpontdia/2f22ca2ddf1ba473d6e2cff61cc2fba9/raw/micorp-item-sapi-cc.svg)
-  ![Build and deploy](https://github.com/jpontdia/micorp-item-sapi/actions/workflows/build.yml/badge.svg)
+  ![Build](https://github.com/jpontdia/micorp-item-sapi/actions/workflows/build.yml/badge.svg)
+  ![Build job](https://gist.githubusercontent.com/jpontdia/2f22ca2ddf1ba473d6e2cff61cc2fba9/raw/micorp-item-sapi-wf.svg)
+  ![Release](https://gist.githubusercontent.com/jpontdia/2f22ca2ddf1ba473d6e2cff61cc2fba9/raw/micorp-item-sapi-re.svg)
+  ![dev version](https://gist.githubusercontent.com/jpontdia/2f22ca2ddf1ba473d6e2cff61cc2fba9/raw/micorp-item-sapi-dev.svg)
+  ![dev test](https://gist.githubusercontent.com/jpontdia/2f22ca2ddf1ba473d6e2cff61cc2fba9/raw/micorp-item-sapi-dev-test.svg)
+  ![tst version](https://gist.githubusercontent.com/jpontdia/2f22ca2ddf1ba473d6e2cff61cc2fba9/raw/micorp-item-sapi-tst.svg)
+  ![tst test](https://gist.githubusercontent.com/jpontdia/2f22ca2ddf1ba473d6e2cff61cc2fba9/raw/micorp-item-sapi-tst-test.svg)  
 <br>
 
 Mulesoft service for creating order items in Salesforce using data from the Corporate Orders System. 
