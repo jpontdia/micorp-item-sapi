@@ -23,7 +23,7 @@ messages:
   record-created-success: "The item was created successfully"
   record-deleted-success: "The item was deleted successfully"
   record-doesnt-exist-relations: "The record does not exist or has relations with other resources"
-  customer-error: "There was a problme while trying to create the Customer"
+  record-error: "There was a problem while trying to create the record"
 
 # All the below properties should be added as JVM arguments / Environment Properties.
 # Example: -Dsalesforce.user=myuser -Dsalesforce.password=mypassword

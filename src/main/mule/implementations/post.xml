@@ -7,7 +7,7 @@
 	xmlns="http://www.mulesoft.org/schema/mule/core" 
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core 
+	xsi:schemaLocation="
 		http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/ee/core 
 		http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
@@ -21,7 +21,7 @@
 		<logger 
 			level="INFO" 
 			doc:name="start" 
-			message="#[&quot;Create item for orderId=&quot; ++ payload.orderId]"/>
+			message="#[&quot;Create item for orderId=&quot; ++ payload.orderId]" category="app"/>
 		
 		<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": payload.orderId default "",&#10;    "category": payload.category default "",&#10;    "itemId": payload.id default ""&#10;}]' doc:name="otel Tags" doc:id="68064cb3-35bc-4da6-9362-fa08fd1eba0d" variableName="openTelemetryTags" />
 		<set-variable value='#[attributes.requestUri ++ "/"]' doc:name="Set Location" variableName="location" />
@@ -45,17 +45,34 @@ output application/json
 			type="Item__c" 
 			doc:name="Create Item" 
 			config-ref="GlobalSalesforceConfig" />
-		<validation:is-true doc:id="c8d4fedb-ac40-433e-8536-86110b88e136" expression="#[payload.successful == true]" doc:name="create success?" />
-		<ee:transform doc:name="Set Header" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+			
+		<logger 
+			level="DEBUG" 
+			doc:name="Logger" 
+			message="#[payload]" 
+			category="app"/>
+
+		<choice doc:name="verify success" >
+			<when expression="#[payload.successful == true]">
+				<logger 
+					level="DEBUG" 
+					doc:name="Logger"  
+					message="Item created successfully" 
+					category="app"/>
+
+				<ee:transform doc:name="headers and response" >
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
 {
+  message: "Item created successfully"
 }]]></ee:set-payload>
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="outboundHeaders" ><![CDATA[%dw 2.0
+					</ee:message>
+
+					<ee:variables >
+						<ee:set-variable 
+							variableName="outboundHeaders" ><![CDATA[%dw 2.0
 output application/java
 ---
 {"Location": 
@@ -63,19 +80,34 @@ output application/java
 		++ (payload.items[0].id as String)
 	)
 }]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<ee:transform doc:name="Response Message">
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+					</ee:variables>
+				</ee:transform>
+			</when>
+
+			<otherwise >
+				<logger 
+					level="DEBUG" 
+					doc:name="Logger"
+					message="The item couldn't be created" 
+					category="app"/>
+				
+				<ee:transform doc:name="Status 500 Response" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  message: "Item created successfully"
-}
-]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<error-handler ref="global-error-handler" />
+  message: "${messages.record-error}"
+}]]></ee:set-payload>
+					</ee:message>
+
+					<ee:variables >
+						<ee:set-variable 
+							variableName="httpStatus" ><![CDATA["500"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+
 	</flow>
 </mule>

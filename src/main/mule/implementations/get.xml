@@ -46,23 +46,19 @@ FROM Item__c
 	soqlFilter : vars.soqlFilter
 }]]]></salesforce:parameters>
 		</salesforce:query>
-		<ee:transform doc:name="Item Response">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output json
-
----
-payload map (item, value) ->
-{
-    id: item.sourceId__c,
-    category: item.Category__c,
-    quantity: item.quantity__c,
-    size: item.size__c,
-    orderId: item.Order__c,
-    itemId: item.Id
-}    ]]></ee:set-payload>
+		
+		<logger 
+			level="DEBUG" 
+			doc:name="Logger"
+			category="app" 
+			message="#[${file::script-records-found.dwl}]"/>
+		
+		<ee:transform doc:name="Customer Payload">
+			<ee:message >
+				<ee:set-payload ><![CDATA[${file::script-records-from-payload.dwl}]]></ee:set-payload>
 			</ee:message>
-		</ee:transform>
+		</ee:transform>			
+		
 		<error-handler ref="global-error-handler" />
 	</flow>
 	
@@ -73,7 +69,7 @@ payload map (item, value) ->
 		<logger 
 			level="INFO" 
 			doc:name="start" 
-			message='#["Items for orderId=" ++ attributes.queryParams.orderId]'/>
+			message='#["Items for orderId=" ++ attributes.queryParams.orderId]' category="app"/>
 		
 		<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": attributes.queryParams.orderId default ""&#10;}]' doc:name="otel Tags" doc:id="7dd612c1-759b-472e-ab16-11ad102c557c" variableName="openTelemetryTags" />
 		
@@ -90,16 +86,22 @@ payload map (item, value) ->
 	</flow>
 	
 	
-	<flow name="get:\items\(itemId)" doc:id="203b1796-134d-46ec-b93f-5b6d0804d747" >
+	<flow name="get:\items\(itemId)" >
 	
 		<logger 
 			level="INFO" 
 			doc:name="start" 
-			message="#[&quot;Item getById itemId=&quot; ++ attributes.uriParams.'itemId']"/>
+			message="#[&quot;Item getById itemId=&quot; ++ attributes.uriParams.'itemId']" category="app"/>
 				
-		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]" doc:name="otel Tags" doc:id="2979d5a3-ebc0-4c4e-8bc3-2e50ea275760" variableName="openTelemetryTags" />
+		<set-variable 
+			value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]"
+			doc:name="otel Tags" 
+			variableName="openTelemetryTags" />
 		
-		<set-variable value="#[attributes.uriParams.'itemId']" doc:name="itemId" variableName="itemId" />
+		<set-variable 
+			value="#[attributes.uriParams.'itemId']" 
+			doc:name="itemId" 
+			variableName="itemId" />
 		
 		<flow-ref doc:name="queryItem"  name="queryItem" />
 		

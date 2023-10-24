@@ -18,12 +18,12 @@
 		http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 	">
 
-	<flow name="deleteFlow" doc:id="7eaec4ec-9f52-4a54-bc95-bef41836cdf1" >
+	<flow name="deleteFlow">
 	
 		<logger 
 			level="INFO" 
 			doc:name="start" 
-			message="#[&quot;Delete itemId=&quot; ++ attributes.uriParams.'itemId']"/>
+			message="#[&quot;Delete itemId=&quot; ++ attributes.uriParams.'itemId']" category="app"/>
 			
 		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]" doc:name="otel Tags" doc:id="7520dd46-2640-4920-adcf-c8844ce646d2" variableName="openTelemetryTags" />
 
@@ -46,6 +46,11 @@ attributes.uriParams.'itemId']]></ee:set-variable>
 
 		<choice doc:name="Choice" >
 			<when expression="#[payload.successful]" >
+				<logger 
+					level="DEBUG" 
+					doc:name="Logger"
+					message="Item deleted successfully" 
+					category="app"/>
 				<ee:transform doc:name="delete success" >
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -59,7 +64,11 @@ output application/json
 		</ee:transform>
 			</when>
 			<otherwise >
-				<logger level="INFO" doc:name="Logger" message='#["Error on deleting itemId=" ++ vars.itemId]'/>
+				<logger
+					level="DEBUG" 
+					doc:name="Logger" 
+					message='#["Error on deleting itemId=" ++ vars.itemId]'
+					category="app"/>
 				<ee:transform doc:name="Response" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
@@ -71,7 +80,8 @@ output application/json
 ]]></ee:set-payload>
 					</ee:message>
 					<ee:variables >
-						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+						<ee:set-variable
+							variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 			</otherwise>
