@@ -62,14 +62,13 @@ FROM Item__c
 		<error-handler ref="global-error-handler" />
 	</flow>
 	
-	
-	
 	<flow name="get:\items" >
 	
 		<logger 
 			level="INFO" 
 			doc:name="start" 
-			message='#["Items for orderId=" ++ attributes.queryParams.orderId]' category="app"/>
+			message='#["Items for orderId=" ++ attributes.queryParams.orderId]'
+			category="app"/>
 		
 		<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": attributes.queryParams.orderId default ""&#10;}]' doc:name="otel Tags" doc:id="7dd612c1-759b-472e-ab16-11ad102c557c" variableName="openTelemetryTags" />
 		
@@ -91,7 +90,8 @@ FROM Item__c
 		<logger 
 			level="INFO" 
 			doc:name="start" 
-			message="#[&quot;Item getById itemId=&quot; ++ attributes.uriParams.'itemId']" category="app"/>
+			message="#['Query Item by itemId=' ++ attributes.uriParams.'itemId']" 
+			category="app"/>
 				
 		<set-variable 
 			value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    &quot;itemId&quot;: attributes.uriParams.'itemId' default &quot;&quot;&#10;}]"
