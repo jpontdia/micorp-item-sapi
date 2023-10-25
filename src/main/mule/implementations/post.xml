@@ -8,6 +8,7 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core 
 		http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/ee/core 
 		http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
@@ -16,15 +17,25 @@
 		http://www.mulesoft.org/schema/mule/salesforce 
 		http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 ">
-	<flow name="post:\items:application\" doc:id="072529fa-ca24-46bb-9390-97285b58c550" >
+
+	<flow name="post:\items:application\">
 		
 		<logger 
 			level="INFO" 
 			doc:name="start" 
-			message="#[&quot;Create item for orderId=&quot; ++ payload.orderId]" category="app"/>
+			message="#[&quot;Create item for orderId=&quot; ++ payload.orderId]"
+			category="app"/>
 		
-		<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": payload.orderId default "",&#10;    "category": payload.category default "",&#10;    "itemId": payload.id default ""&#10;}]' doc:name="otel Tags" doc:id="68064cb3-35bc-4da6-9362-fa08fd1eba0d" variableName="openTelemetryTags" />
-		<set-variable value='#[attributes.requestUri ++ "/"]' doc:name="Set Location" variableName="location" />
+		<set-variable 
+			value='#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;    "orderId": payload.orderId default "",&#10;    "category": payload.category default "",&#10;    "itemId": payload.id default ""&#10;}]' 
+			doc:name="otel Tags" 
+			variableName="openTelemetryTags" />
+			
+		<set-variable 
+			value='#[attributes.requestUri ++ "/"]' 
+			doc:name="Set Location" 
+			variableName="location" />
+			
 		<ee:transform doc:name="Salesforce Item record" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -41,10 +52,11 @@ output application/json
 ]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		
 		<salesforce:create 
-			type="Item__c" 
-			doc:name="Create Item" 
-			config-ref="GlobalSalesforceConfig" />
+			type="Item__c"
+			doc:name="Create Item"
+			config-ref="GlobalSalesforceConfig"/>
 			
 		<logger 
 			level="DEBUG" 
@@ -97,7 +109,7 @@ output application/java
 output application/json
 ---
 {
-  message: "${messages.record-error}"
+  message: "${messages.record-create-error}"
 }]]></ee:set-payload>
 					</ee:message>
 

@@ -57,7 +57,7 @@ attributes.uriParams.'itemId']]></ee:set-variable>
 output application/json
 ---
 {
-  message: "${messages.record-deleted-success}"
+  message: "${messages.record-delete-success}"
 }
 ]]></ee:set-payload>
 			</ee:message>
@@ -75,7 +75,7 @@ output application/json
 output application/json
 ---
 {
-  message: "${messages.record-doesnt-exist-relations}"
+  message: "${messages.record-delete-error}"
 }
 ]]></ee:set-payload>
 					</ee:message>
